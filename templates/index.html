@@ -1,15 +1,34 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Записи в блоге</h1>
-{% for item in news%}
+<h1 align="center">Tambov bookcrossing</h1>
+{% for item in ads%}
 <div class="col-md6 border rounded">
     <h2>{{item.title}}</h2>
     <div>
-        {{item.content}}
+        Автор: {{item.author}}
     </div>
     <div>
-        Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
+        Жанр: {{item.genre}}
+    </div>
+    <div>
+        О книге:
+        {{item.about}}
+    </div>
+    <div>
+        Издатель: {{item.publisher}}
+    </div>
+    <div>
+        Год издания: {{item.year}}
+    </div>
+    <div>
+        Разместил: {{item.user.name}}
+    </div>
+    <div>
+        E-mail {{item.user.email}}
+    </div>
+    <div>
+        {{item.created_date}}
     </div>
 </div>
 {% endfor %}

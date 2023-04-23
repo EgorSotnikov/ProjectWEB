@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect
 from data import db_session
 from data.users import User
-from data.news import News
+from data.ads import Ads
 from forms.user import RegisterForm, LoginForm
 from flask_login import LoginManager, login_user
 
@@ -12,7 +12,7 @@ login_manager.init_app(app)
 
 
 def main():
-    db_session.global_init("db/blogs.db")
+    db_session.global_init("db/ads.db")
     app.run()
 
 
@@ -20,8 +20,8 @@ def main():
 @app.route("/index")
 def index():
     db_sess = db_session.create_session()
-    news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("index.html", news=news)
+    ads = db_sess.query(Ads)
+    return render_template("index.html", ads=ads)
 
 
 @login_manager.user_loader
