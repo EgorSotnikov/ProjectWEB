@@ -3,7 +3,8 @@ from data import db_session
 from data.users import User
 from data.ads import Ads
 from forms.user import RegisterForm, LoginForm
-from flask_login import LoginManager, login_user, login_required, logout_user
+from forms.ad import AdsForm
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -50,6 +51,40 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
+
+
+@app.route('/news',  methods=['GET', 'POST'])
+@login_required
+def add_news():
+    form = AdsForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        ads = Ads()
+        ads.title = form.title.data
+        ads.author = form.author.data
+        ads.genre = form.genre.data
+        ads.about = form.about.data
+        ads.publisher = form.publisher.data
+        ads.year = form.year.data
+        current_user.news.append(ads)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('ads.html', title='Добавление новости',
+                           form=form)
+
+
+@app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def ads_delete(id):
+    db_sess = db_session.create_session()
+    news = db_sess.query(Ads).filter(Ads.id == id, Ads.user == current_user).first()
+    if news:
+        db_sess.delete(news)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
