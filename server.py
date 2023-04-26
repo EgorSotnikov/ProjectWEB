@@ -55,7 +55,7 @@ def logout():
 
 @app.route('/news',  methods=['GET', 'POST'])
 @login_required
-def add_news():
+def add_ads():
     form = AdsForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -70,13 +70,13 @@ def add_news():
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
-    return render_template('ads.html', title='Добавление новости',
+    return render_template('ads.html', title='Добавление объявления',
                            form=form)
 
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_news(id):
+def edit_ads(id):
     form = AdsForm()
     if request.method == "GET":
         db_sess = db_session.create_session()
@@ -104,7 +104,7 @@ def edit_news(id):
             return redirect('/')
         else:
             abort(404)
-    return render_template('ads.html', title='Редактирование новости', form=form)
+    return render_template('ads.html', title='Редактирование объявления', form=form)
 
 
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
