@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, abort, request
 from data import db_session
 from data.users import User
 from data.ads import Ads
@@ -72,6 +72,39 @@ def add_news():
         return redirect('/')
     return render_template('ads.html', title='Добавление новости',
                            form=form)
+
+
+@app.route('/news/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_news(id):
+    form = AdsForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        ads = db_sess.query(Ads).filter(Ads.id == id, Ads.user == current_user).first()
+        if ads:
+            form.title.data = ads.title
+            form.author.data = ads.author
+            form.genre.data = ads.genre
+            form.about.data = ads.about
+            form.publisher.data = ads.publisher
+            form.year.data = ads.year
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        ads = db_sess.query(Ads).filter(Ads.id == id, Ads.user == current_user).first()
+        if ads:
+            ads.title = form.title.data
+            ads.author = form.author.data
+            ads.genre = form.genre.data
+            ads.about = form.about.data
+            ads.publisher = form.publisher.data
+            ads.year = form.year.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('ads.html', title='Редактирование новости', form=form)
 
 
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
